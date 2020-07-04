@@ -1,0 +1,4 @@
+2020-06-30 15:54:31,154 - ERROR: 'NoneType' object has no attribute 'find_all'
+2020-06-30 15:57:16,642 - ERROR: 'NoneType' object has no attribute 'find_all'
+2020-06-30 16:17:53,564 - ERROR: 'ProjectsHandler' object has no attribute 'users_collection'
+2020-06-30 16:19:32,401 - ERROR: 'ProjectsHandler' object has no attribute 'users_collection'
