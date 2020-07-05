@@ -5,6 +5,7 @@ from tornado.options import define, options
 from logzero import logger
 
 from handlers.project import ProjectHandler
+from handlers.uploadhandler import UploadHandler
 import mongo
 
 import settings
@@ -14,7 +15,9 @@ define('version', default=1)
 
 def make_app():
     endpoints = [
-        (r'/api/v1/projects/?(.*)?'.format(options.version), ProjectHandler)
+        (r'/api/v1/projects/?(.*)?', ProjectHandler),
+        (r'/api/v1/upload/?', UploadHandler,
+             dict(upload_path="C:/UserData/z003rvhr/python/tornado_bim/tornado-bim/tmp", naming_strategy=None))
     ]
 
     return Application(endpoints,

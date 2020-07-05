@@ -6,6 +6,10 @@ from logzero import logger
 from http import HTTPStatus
 from pymongo import *
 import json
+import tornado.web
+import uuid
+import logging
+import os
 
 class ProjectHandler(BaseHandler):
     mongoClient = None
@@ -60,3 +64,8 @@ class ProjectHandler(BaseHandler):
                 new_project = self.collection.find_one(document_id=response)
                 self.write_response(status_code=HTTPStatus.CREATED,
                                     result=new_project)
+
+def uuid_naming_strategy(original_name):
+    "File naming strategy that ignores original name and returns an UUID"
+    return str(uuid.uuid4())
+
