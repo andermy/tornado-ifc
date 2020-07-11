@@ -9,7 +9,7 @@ _mongo_client = None
 
 
 class MongoDb():
-    database_collection: None
+    database_collection= None
 
     def __init__(self):
         self.get_mongo_client()
@@ -38,6 +38,14 @@ class MongoDb():
     def find_all(self):
         try:
             response = self.database_collection.find()
+        except Exception as ex:
+            raise ex
+        else:
+            return list(json.loads(dumps(response)))
+    
+    def query(self, q):
+        try:
+            response = self.database_collection.find(q)
         except Exception as ex:
             raise ex
         else:

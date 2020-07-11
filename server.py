@@ -4,8 +4,8 @@ from tornado.httpserver import HTTPServer
 from tornado.options import define, options
 from logzero import logger
 
-from handlers.project import ProjectHandler
-from handlers.uploadhandler import UploadHandler
+from handlers.projecthandler import ProjectHandler, VersionHandler, ProjectProductHandler
+from handlers.ifcfilehandler import IfcFileHandler
 import mongo
 
 import settings
@@ -16,7 +16,9 @@ define('version', default=1)
 def make_app():
     endpoints = [
         (r'/api/v1/projects/?(.*)?', ProjectHandler),
-        (r'/api/v1/upload/?', UploadHandler,
+        (r'/api/v1/version/?(.*)?', VersionHandler),
+        (r'/api/v1/product/?(.*)?', ProjectProductHandler),
+        (r'/api/v1/upload/?', IfcFileHandler,
              dict(upload_path="C:/UserData/z003rvhr/python/tornado_bim/tornado-bim/tmp", naming_strategy=None))
     ]
 

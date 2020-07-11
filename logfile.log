@@ -2,3 +2,24 @@
 2020-06-30 15:57:16,642 - ERROR: 'NoneType' object has no attribute 'find_all'
 2020-06-30 16:17:53,564 - ERROR: 'ProjectsHandler' object has no attribute 'users_collection'
 2020-06-30 16:19:32,401 - ERROR: 'ProjectsHandler' object has no attribute 'users_collection'
+2020-07-05 18:41:33,434 - ERROR: '' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2020-07-05 18:56:26,316 - ERROR: '"5f0201dd04e7d17a00d2fcc2"' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2020-07-05 19:08:24,773 - ERROR: '5f0201dd04e7d17a00d2fcc2/versions/12d' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2020-07-05 19:23:24,366 - ERROR: '5f0201dd04e7d17a00d2fcc2/versions/12d' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2020-07-06 22:51:44,145 - ERROR: '3434?project=5efb4a2004e7d1545a42ea31' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2020-07-06 22:53:20,067 - ERROR: '34535634636' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2020-07-06 23:03:15,862 - ERROR: 'Collection' object is not callable. If you meant to call the 'find_one' method on a 'Database' object it is failing because no such method exists.
+2020-07-06 23:05:29,026 - ERROR: 'dict' object has no attribute 'loads'
+2020-07-06 23:08:00,156 - ERROR: 'dict' object has no attribute 'loads'
+2020-07-07 13:25:40,085 - ERROR: 'dict' object has no attribute 'loads'
+2020-07-07 13:28:44,769 - ERROR: 'dict' object has no attribute 'loads'
+2020-07-07 13:30:06,955 - ERROR: 'dict' object has no attribute 'loads'
+2020-07-07 13:31:08,375 - ERROR: the JSON object must be str, bytes or bytearray, not dict
+2020-07-07 13:32:16,213 - ERROR: filter must be an instance of dict, bson.son.SON, or other type that inherits from collections.Mapping
+2020-07-07 13:33:37,362 - ERROR: 'dict' object has no attribute 'loads'
+2020-07-07 13:35:39,588 - ERROR: filter must be an instance of dict, bson.son.SON, or other type that inherits from collections.Mapping
+2020-07-07 13:36:37,321 - ERROR: 'dict' object has no attribute 'loads'
+2020-07-07 13:55:43,208 - ERROR: HTTP 400: Bad Request (Missing argument project)
+2020-07-07 13:56:28,541 - ERROR: HTTP 400: Bad Request (Missing argument project)
+2020-07-07 13:56:34,476 - ERROR: HTTP 400: Bad Request (Missing argument project)
+2020-07-07 14:37:10,876 - ERROR: HTTP 400: Bad Request (Missing argument project)
