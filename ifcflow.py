@@ -29,10 +29,8 @@ from scipy.spatial import ConvexHull
 from shapely.ops import nearest_points
 import asyncio
 
-#@receiver(post_save, sender=File)
-#sender, instance, created, **kwargs
 
-def import_ifc(datafile, project):
+def import_ifc(datafile, project, branch):
     #if kwargs.get(created, False):
     #    file = kwargs.get('instance')
     print("Start")
@@ -71,25 +69,46 @@ def import_ifc(datafile, project):
     length = unit.Name
     prefix = unit.Prefix
 
+    # Query version
+    version = 0
+    m = mongo.MongoDb()
+    m.define_collection('version')
+    q = {'project': project, 'branch': branch}
+    query = m.query(q)
+    if len(query) == 0:
+        version = 0
+    else:
+        for q in query:
+            if q['version'] > version:
+                version = q['version']
+        version = version + 1
+    
+    vId = m.insert_one({
+        'project': project,
+        'branch': branch,
+        'version': version
+    })
     count = 0
     
-    task = []
     print("loading storeys")
     for product in floors:
         count = count + 1
-        task.append(iterate_shape(product, colors, project, ifcfile, length, prefix, count))
+        iterate_shape(product, colors, project, ifcfile, length, prefix, count, branch, vId, None, None, None)
+    
+    relStorey, relSpace = set_storey_relations(ifcfile, project, vId, branch)
+    relSystem = set_systems(ifcfile, project, vId, branch)
     print("loading rooms")
     for product in rooms:
         count = count + 1
-        task.append(iterate_shape(product, colors, project, ifcfile, length, prefix, count))
+        iterate_shape(product, colors, project, ifcfile, length, prefix, count, branch, vId, relStorey, relSpace, relSystem)
     print("loading products")
     for product in products:
         count = count + 1
-        task.append(iterate_shape(product, colors, project, ifcfile, length, prefix, count))   
+        iterate_shape(product, colors, project, ifcfile, length, prefix, count, branch, vId, relStorey, relSpace, relSystem)
     
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.gather(*task))
-    loop.close()
+    #loop = asyncio.get_event_loop()
+    #loop.run_until_complete(asyncio.gather(*task))
+    #loop.close()
     #iterate_shapes(products, colors, project, ifcfile, length, prefix)
 
     #update_storeys(project)
@@ -108,7 +127,7 @@ def import_ifc(datafile, project):
     #set_wall_in_room(project)    
 
 
-async def iterate_shape(product, colors, project, ifcfile, length, prefix, count, version):
+def iterate_shape(product, colors, project, ifcfile, length, prefix, count, branch, version, relStorey, relSpace, relSystem):
 
     site = ['IfcSite']
     building = ['IfcBuilding']
@@ -137,7 +156,22 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
     name = ""
     if product.Name:
         name = product.Name
-
+    
+    if ptype not in floor:
+        if pid in relStorey:
+            stor = relStorey[pid]
+        else:
+            stor = []
+        if ptype not in space:
+            if pid in relSpace:
+                s = m.get_mongo_client['space'].find({'version': version, 'pid': relSpace[pid]})
+                if s.count() > 0:
+                    space = str(s[0]['_id'])
+            else:
+                space = []
+            if pid in relSystem:
+                system = relSystem[pid]
+            else: system = []
     #if product.Representation:
         # 2D footprint -if we need 2D
     #    for r in product.Representation.Representations:
@@ -155,6 +189,7 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
             m.define_collection('building')
             dict = {
                 'project': project,
+                'branch': branch,
                 'version': version,
                 'pid': pid,
                 'guid': guid,
@@ -173,6 +208,7 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
             m.define_collection('storey')
             dict = {
                 'project': project,
+                'branch': branch,
                 'version': version,
                 'pid': pid,
                 'guid': guid,
@@ -195,6 +231,7 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
             m.define_collection('space')
             dict = {
                 'project': project,
+                'branch': branch,
                 'version': version,
                 'pid': pid,
                 'guid': guid,
@@ -204,7 +241,8 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
                 'area': area,
                 'vertices': vertices,
                 'corners': corners,
-                'bbox': bbox
+                'bbox': bbox,
+                'storey': stor
             }
             m.insert_one(dict)
 
@@ -216,6 +254,7 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
             m.define_collection('opening')
             dict = {
                 'project': project,
+                'branch': branch,
                 'version': version,
                 'pid': pid,
                 'guid': guid,
@@ -223,7 +262,8 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
                 'name': name,
                 'vertices': vertices,
                 'corners': corners,
-                'bbox': bbox
+                'bbox': bbox,
+                'storey': stor
             }
             m.insert_one(dict)
                 
@@ -233,8 +273,10 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
             corners = get_corners(vertices, False)
             bbox = get_bbox(shape, length)
             m.define_collection('product')
+            
             dict = {
-                'project': project
+                'project': project,
+                'branch': branch,
                 'version': version,
                 'pid': pid,
                 'guid': guid,
@@ -242,7 +284,10 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
                 'name': name,
                 'vertices': vertices,
                 'corners': corners,
-                'bbox': bbox
+                'bbox': bbox,
+                'storey': stor,
+                'space': space,
+                'system': system
             }
             m.insert_one(dict)
     else:
@@ -252,6 +297,7 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
             m.define_collection('storey')
             dict = {
                 'project': project,
+                'branch': branch,
                 'version': version,
                 'pid': pid,
                 'guid': guid,
@@ -266,7 +312,93 @@ async def iterate_shape(product, colors, project, ifcfile, length, prefix, count
             print(ptype)
             print(guid)
     print(count)  
-                    
+
+def set_storey_relations(ifcfile, project, version, branch):
+    site = ['IfcSite']
+    building = ['IfcBuilding']
+    floor = ['IfcBuildingStorey']
+    structure = ['IfcBeam', 'IfcBeamStandardCase', 'IfcColumn', 'IfcColumnStandardCase', 'IfcSlab',
+                 'IfcFooting', 'IfcPile', 'IfcTendon']
+    wall = ['IfcWall', 'IfcWallStandardCase', 'IfcCurtainWall']
+    window = ['IfcWindow', 'IfcWindowStandardCase']
+    door = ['IfcDoor', 'IfcDoorStandardCase']
+    roof = ['IfcRoof']
+    stairs = ['IfcStair', 'IfcStairFlight', 'IfcRamp', 'IfcRampFlight']
+    space = ['IfcSpace']
+    rebar = ['IfcReinforcingBar'],
+    panel = ['IfcPlate']
+    equipment = ['IfcFurnishingElement', 'IfcSanitaryTerminal', 'IfcFlowTerminal', 'IfcElectricAppliance']
+    pipe = ['IfcPipeSegment']
+    pipeConnector = ['IfcPipeFitting']
+    floors = ifcfile.by_type("IfcBuildingStorey")
+    IfcRelAggregates = ifcfile.by_type("IfcRelAggregates")
+    IfcRelContainedInSpatialStructure = ifcfile.by_type("IfcRelContainedInSpatialStructure")
+
+    m = mongo.MongoDb()
+    client = m.get_mongo_client()
+    relStorey = {}
+    relSpace = {}
+    for rel in IfcRelAggregates:
+        if rel[4].is_a() == "IfcBuildingStorey":
+            storey = client['storey'].find({'project': project, 'pid': rel[4].id()})
+            if storey.count() > 0:
+                for r in rel[5]:
+                    relStorey[r.id()] = str(storey[0]['_id'])
+
+    for rel in IfcRelContainedInSpatialStructure:
+        if rel[5].is_a() == "IfcBuildingStorey":
+            storey = client['storey'].find({'project': project, 'pid': rel[5].id()})
+            if storey.count() > 0:
+                for r in rel[4]:
+                    relStorey[r.id()] = str(storey[0]['_id'])
+        if rel[5].is_a() == "IfcSpace":
+            for r in rel[4]:
+                relSpace[r.id()] = rel[5].id()
+    
+    rooms = ifcfile.by_type("IfcSpace")
+    for room in rooms:
+        if len(room.ContainsElements) > 0:
+            for r in room.ContainsElements[0][4]:
+                relSpace[r.id()] = room.id()
+                
+    return relStorey, relSpace
+
+
+def set_systems(ifcfile, project, version, branch):
+    IfcSystem = ifcfile.by_type("IfcSystem")
+    m = mongo.MongoDb()
+    m.define_collection('system')
+    client = m.get_mongo_client()
+
+    i = 0
+    for system in IfcSystem:
+        c = {
+            'pid': system.id(), 
+            'systemCode': system[2], 
+            'description': system[3],
+            'project': project,
+            'version': version,
+            'branch': branch,
+            'products': []
+        }
+        m.insert_one(c)
+        i = i + 1
+        print(i)
+    IfcRelAssigns = ifcfile.by_type("IfcRelAssigns")
+    
+    print("Starting system product mapping")
+    sys = {}
+    for relSystem in IfcRelAssigns:
+        syst = m.query({'project':project, 'version': version, 'pid': relSystem[6].id()})
+        if syst.count()>0:
+            for prod in relSystem[4]:
+                prod = client['product'].find({'project':project, 'version': version, 'pid': prod.id()})
+                if prod.count()>0:
+                    sys[prod.id()] = str(syst[0]['_id'])
+        i = i +1
+        print(i)
+    return sys
+
 
 def get_vertices(shape, length):
     bt = BRep.BRep_Tool()
@@ -318,6 +450,17 @@ def get_corners(vertices, bottom):
             print("Error, no corner")
     return corners
 
+def get_pathdata(corners):
+    pathdata = "M "
+    i = 1
+    for c in corners:
+        if i == len(corners):
+            pathdata = pathdata + str(c[0]/1000) + " " + str(c[1]/1000) + " z"
+        else:
+            pathdata = pathdata + str(c[0]/1000) + " " + str(c[1]/1000) + " L "
+        i = i + 1
+    return pathdata
+        
 
 def distance(P1, P2):
         import math

@@ -1,6 +1,7 @@
 from logzero import logger
 from pymongo import MongoClient
-from bson.json_util import dumps, ObjectId
+from bson.json_util import dumps
+from bson.objectid import ObjectId
 
 import settings
 import json
@@ -34,6 +35,15 @@ class MongoDb():
             raise ex
         else:
             return str(response.inserted_id)
+    
+    def insert_many(self, data: list):
+        try:
+            response = self.database_collection.insert_many(data)
+
+        except Exception as ex:
+            raise ex
+        else:
+            return str(response)
 
     def find_all(self):
         try:

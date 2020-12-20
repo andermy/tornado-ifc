@@ -23,3 +23,12 @@
 2020-07-07 13:56:28,541 - ERROR: HTTP 400: Bad Request (Missing argument project)
 2020-07-07 13:56:34,476 - ERROR: HTTP 400: Bad Request (Missing argument project)
 2020-07-07 14:37:10,876 - ERROR: HTTP 400: Bad Request (Missing argument project)
+2020-07-13 07:56:19,112 - ERROR: unorderable types: int() > str()
+2020-07-13 07:58:07,038 - ERROR: unorderable types: int() > str()
+2020-07-13 08:00:19,815 - ERROR: unorderable types: int() > ObjectId()
+2020-07-13 08:01:06,251 - ERROR: int() argument must be a string, a bytes-like object or a number, not 'ObjectId'
+2020-12-14 19:17:34,595 - ERROR: 'IfcFile' object has no attribute 'add_element_to_db'
+2020-12-14 19:18:32,235 - ERROR: 'IfcFile' object has no attribute 'add_element_to_db'
+2020-12-14 19:19:54,760 - ERROR: 'str' object has no attribute 'define_collection'
+2020-12-14 19:24:15,952 - ERROR: 'NoneType' object does not support item assignment
+2020-12-15 14:14:09,408 - ERROR: 'MongoDb' object has no attribute 'insert_many'

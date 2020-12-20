@@ -10,6 +10,7 @@ import tornado.web
 import uuid
 import logging
 import os
+from bson.objectid import ObjectId
 
 class ProjectHandler(BaseHandler):
     mongoClient = None
@@ -23,9 +24,8 @@ class ProjectHandler(BaseHandler):
 
     def data_received(self, chunk=None):
         if self.request.body:
-            return json.loads(self.request.body)
+            return json.loads(self.request.body.decode('utf-8'))
 
-   
     def get(self, key):
         try:
             if not key:
@@ -178,12 +178,24 @@ class ProjectProductHandler(BaseHandler):
    
     def get(self, project):
         try:
-            version = self.get_argument('version', 'master')
-            if not project:
-                result = self.collection.find_all()
+            branch = self.get_argument('branch', 'master')
+            version = self.get_argument('version', 'None')
+            storey = self.get_argument('storey', 'None')
+            if version == "None":
+                q = {'project': project, 'branch': branch}
+                ver = self.settings['mongo'].get_mongo_client()['version'].find(q)
+                max_v = 0
+                oid = 0
+                for v in ver:
+                    if v['version'] > max_v:
+                        max_v = int(v['version'])
+                        oid = str(v['_id'])
+                q = {'version': oid}
             else:
-                q = {'project': project, 'version': version}
-                result = self.collection.query(q)
+                q = {'version': version}
+            if storey != 'None':
+                q['storey'] = storey
+            result = self.collection.query(q)
         except ValueError:
             raise ErrorThrow(status_code=HTTPStatus.BAD_REQUEST,
                              reason='no project found with id {}'.format(project))
