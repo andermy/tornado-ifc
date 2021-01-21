@@ -32,3 +32,23 @@
 2020-12-14 19:19:54,760 - ERROR: 'str' object has no attribute 'define_collection'
 2020-12-14 19:24:15,952 - ERROR: 'NoneType' object does not support item assignment
 2020-12-15 14:14:09,408 - ERROR: 'MongoDb' object has no attribute 'insert_many'
+2021-01-14 20:46:15,914 - ERROR: '_id'
+2021-01-15 17:07:39,752 - ERROR: 'None' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:09:43,497 - ERROR: 'None' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:11:44,611 - ERROR: 'None' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:13:29,160 - ERROR: 'None' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:15:19,234 - ERROR: 'None' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:17:10,828 - ERROR: 'None' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:18:32,599 - ERROR: '' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:34:47,370 - ERROR: 'None' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:40:04,936 - ERROR: 'None' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-01-15 17:42:47,644 - ERROR: 'NoneType' object is not subscriptable
+2021-01-15 17:44:23,428 - ERROR: 'NoneType' object is not subscriptable
+2021-01-15 17:45:36,063 - ERROR: 'NoneType' object is not subscriptable
+2021-01-15 17:53:14,353 - ERROR: 'VersionResolver' object has no attribute 'project'
+2021-01-15 18:00:14,728 - ERROR: 'NoneType' object is not subscriptable
+2021-01-17 09:12:13,853 - ERROR: key '$oid' must not start with '$'
+2021-01-17 10:03:30,896 - ERROR: key '$oid' must not start with '$'
+2021-01-20 14:53:24,000 - ERROR: name 'new_file' is not defined
+2021-01-20 14:54:26,834 - ERROR: name 'new_file' is not defined
+2021-01-20 15:01:46,138 - ERROR: cannot encode object: #76=IfcPostalAddress($,$,$,$,$,'#',$,$,$,$), of type: <class 'ifcopenshell.entity_instance.entity_instance'>
