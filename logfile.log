@@ -52,3 +52,29 @@
 2021-01-20 14:53:24,000 - ERROR: name 'new_file' is not defined
 2021-01-20 14:54:26,834 - ERROR: name 'new_file' is not defined
 2021-01-20 15:01:46,138 - ERROR: cannot encode object: #76=IfcPostalAddress($,$,$,$,$,'#',$,$,$,$), of type: <class 'ifcopenshell.entity_instance.entity_instance'>
+2021-01-22 14:49:21,037 - ERROR: list index out of range
+2021-01-22 15:12:04,069 - ERROR: 'list' object is not callable
+2021-01-22 15:37:36,083 - ERROR: list index out of range
+2021-02-08 09:52:40,365 - ERROR: 'from_model'
+2021-02-08 09:53:47,337 - ERROR: 'from_model'
+2021-02-08 19:54:06,537 - ERROR: 's/6021886587030dfb83dc695d' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+2021-02-09 09:05:23,254 - ERROR: unhashable type: 'dict'
+2021-02-09 09:09:04,370 - ERROR: unhashable type: 'dict'
+2021-02-09 09:19:25,839 - ERROR: 
+2021-02-09 09:19:53,228 - ERROR: 
+2021-02-09 09:22:05,004 - ERROR: 
+2021-02-09 09:23:21,069 - ERROR: 
+2021-02-09 10:12:47,027 - ERROR: 
+2021-02-09 10:18:05,022 - ERROR: unhashable type: 'dict'
+2021-02-09 10:19:41,199 - ERROR: unhashable type: 'dict'
+2021-02-09 10:20:34,705 - ERROR: unhashable type: 'dict'
+2021-02-09 10:21:18,454 - ERROR: unhashable type: 'dict'
+2021-02-09 10:21:59,552 - ERROR: unhashable type: 'dict'
+2021-02-09 10:29:11,309 - ERROR: unhashable type: 'dict'
+2021-02-09 10:32:34,833 - ERROR: 'building_type'
+2021-02-09 10:37:56,998 - ERROR: 'building_type'
+2021-02-09 10:39:12,030 - ERROR: 'building_type'
+2021-02-09 10:42:56,597 - ERROR: 'DataFrame' object has no attribute 'project'
+2021-02-09 10:45:36,775 - ERROR: Object of type ObjectId is not JSON serializable
+2021-02-09 10:46:22,381 - ERROR: Object of type ObjectId is not JSON serializable
+2021-02-09 13:14:14,830 - ERROR: Object of type ObjectId is not JSON serializable

@@ -1,23 +1,26 @@
-import mongo as m
+#import mongo as m
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 import json
+import models as m
 
 class VersionResolver():
 
-    def __init__(self, version=None, branch=None, project=None):
-        self.db = m.MongoDb()
-        self.db.define_collection('version')
+    def __init__(self, version=None, branch=None, project=None, versionObject=None):
         self.version = None
         self.project = None
         self.branch = None
+        self.versionObject = None
         if version is not None:
             self.version = version
             self.versionObject = self.get_version_object(version)
-            self.branch = self.versionObject['project']
-            self.project = self.versionObject['branch']
+            self.branch = self.versionObject.branch
+            self.project = self.versionObject.project
+        elif versionObject is not None:
+            self.versionObject = versionObject
+            self.branch = versionObject.branch
+            self.project = versionObject.project
         elif branch is not None:
-            
             self.set_branch(branch, project)
         else:
             self.set_branch("master", project)
@@ -26,44 +29,45 @@ class VersionResolver():
     def set_branch(self, branch, project):
 
         if project is not None:
-            if branch is None:
-                branch = "master"
-            q = {'project': project, 'branch': branch}
-            result = self.db.query(q)
-            versions =  list(json.loads(dumps(result)))
-            if len(versions) > 0:
-                self.version = versions[0]['version']
-                self.project = versions[0]['project']
-                self.branch = versions[0]['branch']
+            try:
+                if branch is None:
+                    branch = "master"
+                project = m.Project.objects.get({'_id':ObjectId(project)})
+                q = {'project': project.pk, 'branch': branch}
+                
+                versions =  m.Version.objects.raw(q)
+                if versions.count() > 0:
+                    self.version = versions.first()
+                    self.project = versions.first().project
+                    self.branch = versions.first().branch
+            except:
+                print("Project does not exist")
 
 
     def get_version_object(self, version):
 
-        result = self.db.find_one(version)
+        result = m.Version.objects.get({'_id':ObjectId(version)})
         return result
     
     def get_branch_versions(self):
 
-        q = {'project': self.project, 'branch': self.branch}
-        result = self.db.query(q)
-        return list(json.loads(dumps(result)))
+        q = {'project': self.project.pk, 'branch': self.branch}
+        result = m.Version.objects.raw(q)
+        return result
     
     def create_new_version(self):
         latest_version = self.get_latest_version()
         if latest_version is not None:
-            new_version = {'branch': latest_version['branch'], 'project': latest_version['project'], 'version': latest_version['version'] + 1}
-            new_version_object = self.db.insert_one(new_version)
-            return self.get_version_object(new_version_object)
+            return m.Version(branch= latest_version.branch, project= latest_version.project, version= int(latest_version.version) + 1).save()
         else:
-            data = {'project': self.project, 'branch': self.branch, 'version': 0}
-            return self.db.insert_one(data)
-    
+            return m.Version(branch= latest_version.branch, project= latest_version.project, version= 0).save()
+            
     def get_latest_version(self):
         versions = self.get_branch_versions()
-        if len(versions) > 0:
-            latest_version = versions[0]
+        if versions.count() > 0:
+            latest_version = versions.first()
             for v in versions:
-                if v['version'] >= latest_version['version']:
+                if v.version >= latest_version.version:
                     latest_version = v
         else:
             latest_version = None
@@ -73,22 +77,21 @@ class VersionResolver():
 
         return version['_id']['$oid']
     
-    def get_previous_version(self, new_version):
+    def get_previous_version(self):
         latest_version = self.get_latest_version()
-        if latest_version['version'] == new_version['version']:
-            if latest_version['version'] > 0:
-                q = {'version': latest_version['version']-1, 'project': latest_version['project'], 'branch': latest_version['branch']}
-                prev_version = self.db.query(q)
-                if len(prev_version) >= 1:
-                    return prev_version[0]
-            else:
-                return None
+        if latest_version is not None:
+            q = {'version': latest_version.version-1, 'project': latest_version.project.pk, 'branch': latest_version.branch}
+            prev_version = m.Version.objects.raw(q)
+            if prev_version.count() >= 1:
+                return prev_version.first()
         else:
             return None
+        
 
     def update_version_elements(self, new_version):
         prev_version = self.get_previous_version(new_version)
         if prev_version is not None:
+            print("figure this out in versionresoolver")
             self.update_version("projects", prev_version ,new_version)
 
     def update_version_elementType(self, db_type, prev_version, new_version):
@@ -102,9 +105,6 @@ class VersionResolver():
                     t['version'].append(ObjectId(new_version['_id']['$oid']))
                     self.db.update_one(t['_id']['$oid'], t)
     
-    def get_elements_query(self, version, storey=None):
-        
-        return 
 
 
 
